@@ -1,0 +1,39 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+notifications:
+  email: false
+git:
+  depth: 99999999
+cache:
+  timeout: 1000
+  directories:
+    - downloads
+env:
+  global:
+    - BINARYBUILDER_DOWNLOADS_CACHE=downloads
+    - BINARYBUILDER_AUTOMATIC_APPLE=false
+sudo: required
+
+# Before anything else, get the latest versions of things
+before_script:
+  - julia -e 'using Pkg; pkg"add BinaryProvider"; pkg"add BinaryBuilder#master"; Pkg.build()'
+
+script:
+  - julia build_tarballs.jl
+
+
+deploy:
+    provider: releases
+    api_key:
+        # Note; this api_key is only valid for hessammehr/FriBidiBuilder; you need
+        # to make your own: https://docs.travis-ci.com/user/deployment/releases/
+        secure: B145mu76aPTdq65Pn4A1dm/0nK5IsauidEzGJR4Q0IOKE264VGQ36WbfDC9Jw7Xe/wcP30nFuiZmmOD2nTgPGpCwYNqNH+jv385gF/5BwBdG053dBEWNcekFrna6iBSvQDGOCfMEufsq3NhbD5x36BbG+3EnEI+It/9b6ZV7AABo6Qxh4eIQXhg1EvCleRSGrTHxL8/eWsjXCQgCqX6/XqQHCrgtCFhTwA3/HstdlQZwnSFqEJ/sQbkh9f5j2/mE0CvHuZ0Kprshqzg4jTWsgBMRfUeh7N/UHVhcTC8s5U2IVfdIJGc/D3sSWIy1WmMjZTy2brKGXGewVZ9BNt2rHQuaa3hlRoMVRde9SGKWtPPYZqZ6NdSNBlVONs3YFXPx4h4oCLdCpMhgmGQeOChzf1mtKNJSQkgAcjGyyHn6HrtaDDX3FXMwrwMu684cBaexk7aH+XNh+S824GCFI0aO7WwA5Y+ammXZoiEQzcRnN/xS46Lp8GqUsMck4iK3H4WZGpnQACRnJEHqHSgTYdrvB0KuTpCi9ARytqYHlwR7edlxLVKoy7s8ieFo8wMZ2BD/YCXPSMRXSb1F1Lr0ENKwhYBIlk1gg8TSeH7QAKEmmGvaUhNDuNDqP2lW+gbuvZl9f5gCVxdqXHRgXbxJcyNVNnp3mWw/ZIPmUlRlh8L7xdA=
+    file_glob: true
+    file: products/*
+    skip_cleanup: true
+    on:
+        repo: hessammehr/FriBidiBuilder
+        tags: true
